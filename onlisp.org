@@ -1283,7 +1283,7 @@ However, the basic behavior of closures is independent of such
 refinements.
 
 In real programs, the closures and data structures would also be more
-elaborate than those we see in make-adderor make-dbms. The single shared
+elaborate than those we see in make-adder or make-dbms. The single shared
 variable could be any number of variables, each bound to any sort of
 data structure.
 
