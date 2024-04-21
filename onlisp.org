@@ -1377,7 +1377,7 @@ variable made by the same let--that is, you can't say
       y)
 #+END_EXAMPLE
 
-and expect the value of the newy to reflect that of the newx. In
+and expect the value of the new y to reflect that of the new x. In
 contrast, the body of a function f defined in a labels expression may
 refer to any other function defined there, including f itself, which
 makes recursive function definitions possible.
