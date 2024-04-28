@@ -2328,7 +2328,7 @@ that's not all that's wrong with it: it is also burying in a specific
 function something that could be done by a general-purpose operator.
 
 In this case the operator, mapcan, already exists. Anyone who knew about
-mapcanwould feel a little uncomfortable looking at all-nicknames. To be
+mapcan would feel a little uncomfortable looking at all-nicknames. To be
 good at bottom-up programming is to feel equally uncomfortable when the
 missing operator is one which hasn't been written yet. You must be able
 to say "what you really want is x," and at the same time, to know what x
