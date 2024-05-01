@@ -532,20 +532,20 @@ it just as you would use mapcar. For example, if you want a list of the
 values returned by some function when it is applied to all the integers
 from 1 to 10, you could create a new list and pass it to mapcar:
 
-#+BEGIN_EXAMPLE
-    (mapcar fn
-        (do* ((x 1 (1+ x))
-              (result (list x) (push x result)))
-            ((= x 10) (nreverse result))))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (mapcar fn
+          (do* ((x 1 (1+ x))
+                (result (list x) (push x result)))
+               ((= x 10) (nreverse result))))
+#+END_SRC
 
 but this approach is both ugly and
 inefficient.[fn:2] Instead you could define a new mapping
 function map1-n (see page 54), and then call it as follows:
 
-#+BEGIN_EXAMPLE
-    (map1-n fn 10)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (map1-n fn 10)
+#+END_SRC
 
 Defining functions is comparatively straightforward. Macros provide a
 more general, but less well-understood, means of defining new operators.
@@ -573,18 +573,18 @@ some body of code for x from a to b. The built-in Lisp do is meant for
 more general cases. For simple iteration it does not yield the most
 readable code:
 
-#+BEGIN_EXAMPLE
-    (do ((x a (+ 1 x)))
-        ((> x b))
-      (print x))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (do ((x a (+ 1 x)))
+      ((> x b))
+    (print x))
+#+END_SRC
 
 Instead, suppose we could just say:
 
-#+BEGIN_EXAMPLE
-    (for (x a b)
-         (print x))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (for (x a b)
+       (print x))
+#+END_SRC
 
 Macros make this possible. With six lines of code (see page 154) we can
 add for to the language, just as if it had been there from the start.
