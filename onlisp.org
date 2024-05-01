@@ -755,9 +755,9 @@ three parts: the symbol lambda, a parameter list, and a body of zero or
 more expressions. This lambda-expression refers to a function equivalent
 to double:
 
-#+BEGIN_EXAMPLE
-    (lambda (x) (* x 2))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (lambda (x) (* x 2))
+#+END_SRC
 
 It describes a function which takes one argument x, and returns 2x.
 
@@ -842,12 +842,12 @@ Beneath the surface, defun is setting the symbol-function of its first
 argument to a function constructed from the remaining arguments. The
 following two expressions do approximately the same thing:
 
-#+BEGIN_EXAMPLE
-    (defun double (x) (* x 2))
+#+BEGIN_SRC lisp
+  (defun double (x) (* x 2))
 
-    (setf (symbol-function 'double)
-          #'(lambda (x) (* x 2)))
-#+END_EXAMPLE
+  (setf (symbol-function 'double)
+        #'(lambda (x) (* x 2)))
+#+END_SRC
 
 So defun has the same effect as procedure definition in other
 languages--to associate a name with a piece of code. But the underlying
@@ -875,28 +875,28 @@ way of calling them. In Lisp, this function is apply. Generally, we call
 apply with two arguments: a function, and a list of arguments for it.
 The following four expressions all have the same effect:
 
-#+BEGIN_EXAMPLE
-    (+ 1 2)
-    (apply #'+ '(1 2))
-    (apply (symbol-function '+) '(1 2))
-    (apply #'(lambda (x y) (+ x y)) '(1 2))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (+ 1 2)
+  (apply #'+ '(1 2))
+  (apply (symbol-function '+) '(1 2))
+  (apply #'(lambda (x y) (+ x y)) '(1 2))
+#+END_SRC
 
 In Common Lisp, apply can take any number of arguments, and the function
 given first will be applied to the list made by consing the rest of the
 arguments onto the list given last. So the expression
 
-#+BEGIN_EXAMPLE
-    (apply #'+ 1 '(2))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (apply #'+ 1 '(2))
+#+END_SRC
 
 is equivalent to the preceding four. If it is inconvenient to give the
 arguments as a list, we can use funcall, which differs from apply only
 in this respect. This expression
 
-#+BEGIN_EXAMPLE
-    (funcall #'+ 1 2)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (funcall #'+ 1 2)
+#+END_SRC
 
 has the same effect as those above.
 
@@ -957,14 +957,14 @@ the elements of the list for which the function returns false.
 As an example of a function which takes functional arguments, here is a
 definition of a limited version of remove-if:
 
-#+BEGIN_EXAMPLE
-    (defun our-remove-if (fn lst)
-      (if (null lst)
-          nil
+#+BEGIN_SRC lisp
+  (defun our-remove-if (fn lst)
+    (if (null lst)
+        nil
         (if (funcall fn (car lst))
-        (our-remove-if fn (cdr lst))
-          (cons (car lst) (our-remove-if fn (cdr lst))))))
-#+END_EXAMPLE
+            (our-remove-if fn (cdr lst))
+            (cons (car lst) (our-remove-if fn (cdr lst))))))
+#+END_SRC
 
 Note that within this definition fn is not sharp-quoted. Since functions
 are data objects, a variable can have a function as its regular value.
@@ -992,34 +992,34 @@ Suppose we want to write a function which takes a type of animal and
 behaves appropriately. In most languages, the way to do this would be
 with a case statement, and we can do it this way in Lisp as well:
 
-#+BEGIN_EXAMPLE
-    (defun behave (animal)
-      (case animal
-        (dog (wag-tail)
-         (bark))
-        (rat (scurry)
-         (squeak))
-        (cat (rub-legs)
-         (scratch-carpet))))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun behave (animal)
+    (case animal
+      (dog (wag-tail)
+       (bark))
+      (rat (scurry)
+       (squeak))
+      (cat (rub-legs)
+       (scratch-carpet))))
+#+END_SRC
 
 What if we want to add a new type of animal? If we were planning to add
 new animals, it would have been better to define behave as follows:
 
-#+BEGIN_EXAMPLE
-    (defun behave (animal)
-      (funcall (get animal 'behavior)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun behave (animal)
+    (funcall (get animal 'behavior)))
+#+END_SRC
 
 and to define the behavior of an individual animal as a function stored,
 for example, on the property list of its name:
 
-#+BEGIN_EXAMPLE
-    (setf (get 'dog 'behavior)
-          #'(lambda ()
-          (wag-tail)
-          (bark)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (setf (get 'dog 'behavior)
+        #'(lambda ()
+            (wag-tail)
+            (bark)))
+#+END_SRC
 
 This way, all we need do in order to add a new animal is define a new
 property. No functions have to be rewritten.
@@ -1062,11 +1062,11 @@ as a parameter, or by variable-binding operators like let and do.
 Symbols which are not bound are said to be free. In this example, scope
 comes into play:
 
-#+BEGIN_EXAMPLE
-    (let ((y 7))
-      (defun scope-test (x)
-        (list x y)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (let ((y 7))
+    (defun scope-test (x)
+      (list x y)))
+#+END_SRC
 
 Within the defun expression,x is bound and y is free. Free variables are
 interesting because it's not obvious what their values should be.
@@ -1135,11 +1135,11 @@ closures. For example, suppose we want to write a function which takes a
 list of numbers and adds a certain amount to each one. The function
 list+
 
-#+BEGIN_EXAMPLE
-    (defun list+ (lst n)
-      (mapcar #'(lambda (x) (+ x n))
-          lst))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun list+ (lst n)
+    (mapcar #'(lambda (x) (+ x n))
+            lst))
+#+END_SRC
 
 will do what we want:
 
@@ -1159,11 +1159,11 @@ by Abelson and Sussman's classic Structure and Interpretation of
 Computer Programs. Closures are functions with local state. The simplest
 way to use this state is in a situation like the following:
 
-#+BEGIN_EXAMPLE
-    (let ((counter 0))
-      (defun new-id () (incf counter))
-      (defun reset-id () (setq counter 0)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (let ((counter 0))
+    (defun new-id () (incf counter))
+    (defun reset-id () (setq counter 0)))
+#+END_SRC
 
 These two functions share a variable which serves as a counter. The
 first one returns successive values of the counter, and the second
@@ -1174,10 +1174,10 @@ references.
 It's also useful to be able to return functions with local state. For
 example, the function make-adder
 
-#+BEGIN_EXAMPLE
-    (defun make-adder (n)
-      #'(lambda (x) (+ x n)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun make-adder (n)
+    #'(lambda (x) (+ x n)))
+#+END_SRC
 
 takes a number, and returns a closure which, when called, adds that
 number to its argument. We can make as many instances of adders as we
@@ -1197,13 +1197,13 @@ In the closures returned by make-adder, the internal state is fixed, but
 it's also possible to make closures which can be asked to change their
 state.
 
-#+BEGIN_EXAMPLE
-    (defun make-adderb (n)
-      #'(lambda (x &optional change)
-          (if change
-          (setq n x)
-        (+ x n))))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun make-adderb (n)
+    #'(lambda (x &optional change)
+        (if change
+            (setq n x)
+            (+ x n))))
+#+END_SRC
 
 This new version of make-adder returns closures which, when called with
 one argument, behave just like the old ones.
@@ -1241,18 +1241,18 @@ closed over their own shared copy of an assoc-list.
     #<Interpreted-Function 802347>)
 #+END_EXAMPLE
 
-#+BEGIN_EXAMPLE
-    (defun make-dbms (db)
-      (list
-       #'(lambda (key)
-           (cdr (assoc key db)))
-       #'(lambda (key val)
-           (push (cons key val) db)
-           key)
-       #'(lambda (key)
-           (setf db (delete key db :key #'car))
-           key)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun make-dbms (db)
+    (list
+     #'(lambda (key)
+         (cdr (assoc key db)))
+     #'(lambda (key val)
+         (push (cons key val) db)
+         key)
+     #'(lambda (key)
+         (setf db (delete key db :key #'car))
+         key)))
+#+END_SRC
 
 Figure 2.1: Three closures share a list.
 
@@ -1274,10 +1274,10 @@ Calling the car of a list is a bit ugly. In real programs, the access
 functions might instead be entries in a structure. Using them could also
 be cleaner--databases could be reached indirectly via functions like:
 
-#+BEGIN_EXAMPLE
-    (defun lookup (key db)
-      (funcall (car db) key))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun lookup (key db)
+    (funcall (car db) key))
+#+END_SRC
 
 However, the basic behavior of closures is independent of such
 refinements.
@@ -1330,11 +1330,11 @@ But now suppose that the function has to be a closure, taking some
 bindings from the environment in which the mapcar occurs. In our example
 list+,
 
-#+BEGIN_EXAMPLE
-    (defun list+ (lst n)
-      (mapcar #'(lambda (x) (+ x n))
-          lst))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun list+ (lst n)
+    (mapcar #'(lambda (x) (+ x n))
+            lst))
+#+END_SRC
 
 the first argument to mapcar,#'(lambda (x) (+ x n)), must be defined
 within list+ because it needs to catch the binding of n. So far so good,
@@ -1372,10 +1372,10 @@ However, there is an important difference between let and labels. In a
 let expression, the value of one variable can't depend on another
 variable made by the same let--that is, you can't say
 
-#+BEGIN_EXAMPLE
-    (let ((x 10) (y x))
-      y)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (let ((x 10) (y x))
+    y)
+#+END_SRC
 
 and expect the value of the new y to reflect that of the new x. In
 contrast, the body of a function f defined in a labels expression may
@@ -1385,15 +1385,15 @@ makes recursive function definitions possible.
 Using labels we can write a function analogous to list+, but in which
 the first argument to mapcar is a recursive function:
 
-#+BEGIN_EXAMPLE
-    (defun count-instances (obj lsts)
-      (labels ((instances-in (lst)
-                 (if (consp lst)
-                     (+ (if (eq (car lst) obj) 1 0)
-                    (instances-in (cdr lst)))
+#+BEGIN_SRC lisp
+  (defun count-instances (obj lsts)
+    (labels ((instances-in (lst)
+               (if (consp lst)
+                   (+ (if (eq (car lst) obj) 1 0)
+                      (instances-in (cdr lst)))
                    0)))
-        (mapcar #'instances-in lsts)))
-#+END_EXAMPLE
+      (mapcar #'instances-in lsts)))
+#+END_SRC
 
 This function takes an object and a list, and returns a list of the
 number of occurrences of the object in each element:
@@ -1414,22 +1414,22 @@ A recursive function is one that calls itself. Such a call is
 tail-recursive if no work remains to be done in the calling function
 afterwards. This function is not tail-recursive
 
-#+BEGIN_EXAMPLE
-    (defun our-length (lst)
-      (if (null lst)
-          0
+#+BEGIN_SRC lisp
+  (defun our-length (lst)
+    (if (null lst)
+        0
         (1+ (our-length (cdr lst)))))
-#+END_EXAMPLE
+#+END_SRC
 
 because on returning from the recursive call we have to pass the result
 to 1+. The following function is tail-recursive, though
 
-#+BEGIN_EXAMPLE
-    (defun our-find-if (fn lst)
-      (if (funcall fn (car lst))
-          (car lst)
+#+BEGIN_SRC lisp
+  (defun our-find-if (fn lst)
+    (if (funcall fn (car lst))
+        (car lst)
         (our-find-if fn (cdr lst))))
-#+END_EXAMPLE
+#+END_SRC
 
 because the value of the recursive call is immediately returned.
 
@@ -1445,14 +1445,14 @@ that is by embedding in it a local function which uses an accumulator.
 In this context, an accumulator is a parameter representing the value
 computed so far. For example, our-length could be transformed into
 
-#+BEGIN_EXAMPLE
-    (defun our-length (lst)
-      (labels ((rec (lst acc)
-            (if (null lst)
-                acc
-              (rec (cdr lst) (1+ acc)))))
-        (rec lst 0)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun our-length (lst)
+    (labels ((rec (lst acc)
+               (if (null lst)
+                   acc
+                   (rec (cdr lst) (1+ acc)))))
+      (rec lst 0)))
+#+END_SRC
 
 where the number of list elements seen so far is contained in a second
 parameter, acc. When the recursion reaches the end of the list, the
@@ -1464,9 +1464,9 @@ Many Common Lisp compilers can do tail-recursion optimization, but not
 all of them do it by default. So after writing your functions to be
 tail-recursive, you may also want to put
 
-#+BEGIN_EXAMPLE
+#+BEGIN_SRC lisp
     (proclaim '(optimize speed))
-#+END_EXAMPLE
+#+END_SRC
 
 at the top of the file, to ensure that the compiler can take advantage
 of your efforts.[fn:4]
@@ -1476,16 +1476,16 @@ compilers can generate code that runs as fast as, or faster than, C.
 Richard Gabriel gives as an example the following function, which
 returns the sum of the integers from 1 to n:
 
-#+BEGIN_EXAMPLE
-    (defun triangle (n)
-      (labels ((tri (c n)
-            (declare (type fixnum n c))
-            (if (zerop n)
-                c
-              (tri (the fixnum (+ n c))
-                   (the fixnum (- n 1))))))
-        (tri 0 n)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun triangle (n)
+    (labels ((tri (c n)
+               (declare (type fixnum n c))
+               (if (zerop n)
+                   c
+                   (tri (the fixnum (+ n c))
+                        (the fixnum (- n 1))))))
+      (tri 0 n)))
+#+END_SRC
 
 This is what fast Common Lisp code looks like. At first it may not seem
 natural to write functions this way. It's often a good idea to begin by
@@ -1612,32 +1612,32 @@ If we have a particularly small function, we may want to request that it
 be compiled inline. Otherwise, the machinery of calling it could entail
 more effort than the function itself. If we define a function:
 
-#+BEGIN_EXAMPLE
-    (defun 50th (lst) (nth 49 lst))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun 50th (lst) (nth 49 lst))
+#+END_SRC
 
 and make the declaration:
 
-#+BEGIN_EXAMPLE
-    (proclaim '(inline 50th))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (proclaim '(inline 50th))
+#+END_SRC
 
 then a reference to 50th within a compiled function should no longer
 require a real function call. If we define and compile a function which
 calls 50th,
 
-#+BEGIN_EXAMPLE
-    (defun foo (lst)
-      (+ (50th lst) 1))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun foo (lst)
+    (+ (50th lst) 1))
+#+END_SRC
 
 then when foo is compiled, the code for 50th should be compiled right
 into it, just as if we had written
 
-#+BEGIN_EXAMPLE
-    (defun foo (lst)
-      (+ (nth 49 lst) 1))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun foo (lst)
+    (+ (nth 49 lst) 1))
+#+END_SRC
 
 in the first place. The drawback is that if we redefine 50th, we also
 have to recompile foo, or it will still reflect the old definition. The
