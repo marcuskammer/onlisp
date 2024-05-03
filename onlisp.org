@@ -2967,51 +2967,53 @@ the function given as the fourth argument. With map-> it is possible to
 navigate arbitrary data structures, as well as operate on sequences of
 numbers. We could define mapa-b in terms of map-> as follows:
 
-#+BEGIN_EXAMPLE
-    (defun mapa-b (fn a b &optional (step 1))
-      (map-> fn
-         a
-         #'(lambda (x) (> x b))
-         #'(lambda (x) (+ x step))))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun mapa-b (fn a b &optional (step 1))
+    (map-> fn
+           a
+           #'(lambda (x) (> x b))
+           #'(lambda (x) (+ x step))))
+#+END_SRC
 
-#+BEGIN_EXAMPLE
-    (defun map0-n (fn n)
-      (mapa-b fn 0 n))
+---
 
-    (defun map1-n (fn n)
-      (mapa-b fn 1 n))
+#+BEGIN_SRC lisp
+  (defun map0-n (fn n)
+    (mapa-b fn 0 n))
 
-    (defun mapa-b (fn a b &optional (step 1))
-      (do ((i a (+ i step))
-           (result nil))
-          ((> i b) (nreverse result))
-        (push (funcall fn i) result)))
+  (defun map1-n (fn n)
+    (mapa-b fn 1 n))
 
-    (defun map-> (fn start test-fn succ-fn)
-      (do ((i start (funcall succ-fn i))
-           (result nil))
-          ((funcall test-fn i) (nreverse result))
-        (push (funcall fn i) result)))
+  (defun mapa-b (fn a b &optional (step 1))
+    (do ((i a (+ i step))
+         (result nil))
+        ((> i b) (nreverse result))
+      (push (funcall fn i) result)))
 
-    (defun mappend (fn &rest lsts)
-      (apply #'append (apply #'mapcar fn lsts)))
+  (defun map-> (fn start test-fn succ-fn)
+    (do ((i start (funcall succ-fn i))
+         (result nil))
+        ((funcall test-fn i) (nreverse result))
+      (push (funcall fn i) result)))
 
-    (defun mapcars (fn &rest lsts)
-      (let ((result nil))
-        (dolist (lst lsts)
-          (dolist (obj lst)
-        (push (funcall fn obj) result)))
-        (nreverse result)))
+  (defun mappend (fn &rest lsts)
+    (apply #'append (apply #'mapcar fn lsts)))
 
-    (defun rmapcar (fn &rest args)
-      (if (some #'atom args)
-          (apply fn args)
+  (defun mapcars (fn &rest lsts)
+    (let ((result nil))
+      (dolist (lst lsts)
+        (dolist (obj lst)
+          (push (funcall fn obj) result)))
+      (nreverse result)))
+
+  (defun rmapcar (fn &rest args)
+    (if (some #'atom args)
+        (apply fn args)
         (apply #'mapcar
-           #'(lambda (&rest args)
-               (apply #'rmapcar fn args))
-           args)))
-#+END_EXAMPLE
+               #'(lambda (&rest args)
+                   (apply #'rmapcar fn args))
+               args)))
+#+END_SRC
 
 Figure 4.6: Mapping functions.
 
@@ -3019,10 +3021,10 @@ Figure 4.6: Mapping functions.
 For efficiency, the built-in mapcan is destructive. It could be
 duplicated by:
 
-#+BEGIN_EXAMPLE
-    (defun our-mapcan (fn &rest lsts)
-      (apply #'nconc (apply #'mapcar fn lsts)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun our-mapcan (fn &rest lsts)
+    (apply #'nconc (apply #'mapcar fn lsts)))
+#+END_SRC
 
 Because mapcan splices together lists with nconc, the lists returned by
 the first argument had better be newly created, or the next time we look
@@ -3038,17 +3040,17 @@ function over several lists. If we have two lists of numbers and we want
 to get a single list of the square roots of both, using raw Lisp we
 could say
 
-#+BEGIN_EXAMPLE
-    (mapcar #'sqrt (append list1 list2))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (mapcar #'sqrt (append list1 list2))
+#+END_SRC
 
 but this conses unnecessarily. We append together list1 and list2 only
 to discard the result immediately. With mapcars we can get the same
 result from:
 
-#+BEGIN_EXAMPLE
-    (mapcars #'sqrt list1 list2)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (mapcars #'sqrt list1 list2)
+#+END_SRC
 
 and do no unnecessary consing.
 
@@ -3075,35 +3077,35 @@ rmapcar, including rep on page 324.
 To some extent, traditional list mapping functions may be rendered
 obsolete by the new series macros introduced in CLTL2. For example,
 
-#+BEGIN_EXAMPLE
-    (mapa-b #'fn a b c)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (mapa-b #'fn a b c)
+#+END_SRC
 
 could be rendered
 
-#+BEGIN_EXAMPLE
-    (collect (#Mfn (scan-range :from a :upto b :by c)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (collect (#Mfn (scan-range :from a :upto b :by c)))
+#+END_SRC
 
-#+BEGIN_EXAMPLE
-    (defun readlist (&rest args)
-      (values (read-from-string
-           (concatenate 'string "("
-                (apply #'read-line args)
-                ")"))))
+#+BEGIN_SRC lisp
+  (defun readlist (&rest args)
+    (values (read-from-string
+             (concatenate 'string "("
+                          (apply #'read-line args)
+                          ")"))))
 
-    (defun prompt (&rest args)
-      (apply #'format *query-io* args)
-      (read *query-io*))
+  (defun prompt (&rest args)
+    (apply #'format *query-io* args)
+    (read *query-io*))
 
-    (defun break-loop (fn quit &rest args)
-      (format *query-io* "Entering break-loop.~%")
-      (loop
-       (let ((in (apply #'prompt args)))
-         (if (funcall quit in)
-         (return)
-           (format *query-io* "~A~%" (funcall fn in))))))
-#+END_EXAMPLE
+  (defun break-loop (fn quit &rest args)
+    (format *query-io* "Entering break-loop.~%")
+    (loop
+      (let ((in (apply #'prompt args)))
+        (if (funcall quit in)
+            (return)
+            (format *query-io* "~A~%" (funcall fn in))))))
+#+END_SRC
 
 Figure 4.7: I/O functions.
 
