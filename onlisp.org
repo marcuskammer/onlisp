@@ -2617,6 +2617,8 @@ successive cdrs of the list:
     (2 3 4 5)
 #+END_EXAMPLE
 
+---
+
 #+BEGIN_SRC lisp
   (defun longer (x y)
     (labels ((compare (x y)
