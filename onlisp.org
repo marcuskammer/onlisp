@@ -3185,23 +3185,23 @@ printable representation: symbols, strings, numbers, even lists.
     |ARMadiLL0|
 #+END_EXAMPLE
 
-#+BEGIN_EXAMPLE
-    (defun mkstr (&rest args)
-      (with-output-to-string (s)
-                 (dolist (a args) (princ a s))))
+#+BEGIN_SRC lisp
+  (defun mkstr (&rest args)
+    (with-output-to-string (s)
+      (dolist (a args) (princ a s))))
 
-    (defun symb (&rest args)
-      (values (intern (apply #'mkstr args))))
+  (defun symb (&rest args)
+    (values (intern (apply #'mkstr args))))
 
-    (defun reread (&rest args)
-      (values (read-from-string (apply #'mkstr args))))
+  (defun reread (&rest args)
+    (values (read-from-string (apply #'mkstr args))))
 
-    (defun explode (sym)
-      (map 'list #'(lambda (c)
-             (intern (make-string 1
-                          :initial-element c)))
-           (symbol-name sym)))
-#+END_EXAMPLE
+  (defun explode (sym)
+    (map 'list #'(lambda (c)
+                   (intern (make-string 1
+                                        :initial-element c)))
+         (symbol-name sym)))
+#+END_SRC
 
 Figure 4.8: Functions which operate on symbols and strings.
 
