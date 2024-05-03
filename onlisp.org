@@ -2306,22 +2306,22 @@ builds a list of all the nicknames which could be derived from it. Given
 this function, how do we collect all the nicknames yielded by a list of
 names? Someone learning Lisp might write a function like:
 
-#+BEGIN_EXAMPLE
-    (defun all-nicknames (names)
-      (if (null names)
-          nil
+#+BEGIN_SRC lisp
+  (defun all-nicknames (names)
+    (if (null names)
+        nil
         (nconc (nicknames (car names))
-           (all-nicknames (cdr names)))))
-#+END_EXAMPLE
+               (all-nicknames (cdr names)))))
+#+END_SRC
 
 A more experienced Lisp programmer can look at such a function and say
 "Ah, what you really want is mapcan." Then instead of having to define
 and call a new function to find all the nicknames of a group of people,
 you can use a single expression:
 
-#+BEGIN_EXAMPLE
-    (mapcan #'nicknames people)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (mapcan #'nicknames people)
+#+END_SRC
 
 The definition of all-nicknames is reinventing the wheel. However,
 that's not all that's wrong with it: it is also burying in a specific
@@ -2341,10 +2341,10 @@ nearest to farthest, and that bookshops is a function which returns a
 list of all the bookshops in a city. If we want to find the nearest town
 which has any bookshops, and the bookshops in it, we could begin with:
 
-#+BEGIN_EXAMPLE
-    (let ((town (find-if #'bookshops towns)))
-      (values town (bookshops town)))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (let ((town (find-if #'bookshops towns)))
+    (values town (bookshops town)))
+#+END_SRC
 
 But this is a bit inelegant: when find-if finds an element for which
 bookshops returns a non-nil value, the value is thrown away, only to be
@@ -2352,15 +2352,15 @@ recomputed as soon as find-if returns. If bookshops were an expensive
 call, this idiom would be inefficient as well as ugly. To avoid
 unnecessary work, we could use the following function instead:
 
-#+BEGIN_EXAMPLE
-    (defun find-books (towns)
-      (if (null towns)
-          nil
+#+BEGIN_SRC lisp
+  (defun find-books (towns)
+    (if (null towns)
+        nil
         (let ((shops (bookshops (car towns))))
           (if shops
-          (values (car towns) shops)
-        (find-books (cdr towns))))))
-#+END_EXAMPLE
+              (values (car towns) shops)
+              (find-books (cdr towns))))))
+#+END_SRC
 
 Then calling (find-books towns) would at least get us what we wanted
 with no more computation than necessary. But wait--isn't it likely that
@@ -2369,23 +2369,23 @@ again? What we really want here is a utility which combines find-if and
 some, returning both the successful element, and the value returned by
 the test function. Such a utility could be defined as:
 
-#+BEGIN_EXAMPLE
-    (defun find2 (fn lst)
-      (if (null lst)
-          nil
+#+BEGIN_SRC lisp
+  (defun find2 (fn lst)
+    (if (null lst)
+        nil
         (let ((val (funcall fn (car lst))))
           (if val
-          (values (car lst) val)
-        (find2 fn (cdr lst))))))
-#+END_EXAMPLE
+              (values (car lst) val)
+              (find2 fn (cdr lst))))))
+#+END_SRC
 
 Notice the similarity between find-books and find2. Indeed, the latter
 could be described as the skeleton of the former. Now, using the new
 utility, we can achieve our original aim with a single expression:
 
-#+BEGIN_EXAMPLE
-    (find2 #'bookshops towns)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (find2 #'bookshops towns)
+#+END_SRC
 
 One of the unique characteristics of Lisp programming is the important
 role of functions as arguments. This is part of why Lisp is well-adapted
