@@ -2461,16 +2461,16 @@ unless it is allowed to vent itself in new utilities. The shortest
 idioms are rarely the most efficient ones. If we want to know whether
 one list is longer than another, raw Lisp will tempt us to write
 
-#+BEGIN_EXAMPLE
-    (> (length x) (length y))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (> (length x) (length y))
+#+END_SRC
 
 If we want to map a function over several lists, we will likewise be
 tempted to join them together first:
 
-#+BEGIN_EXAMPLE
-    (mapcar fn (append x y z))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (mapcar fn (append x y z))
+#+END_SRC
 
 Such examples show that it's especially important to write utilities for
 situations we might otherwise handle inefficiently. A language augmented
@@ -2507,24 +2507,24 @@ So although the role of lists is decreased in modern dialects,
 operations on lists can still make up the greater part of a Lisp
 program.
 
-#+BEGIN_EXAMPLE
-    (proclaim '(inline last1 single append1 conc1 mklist))
+#+BEGIN_SRC lisp
+  (proclaim '(inline last1 single append1 conc1 mklist))
 
-    (defun last1 (lst)
-      (car (last lst)))
+  (defun last1 (lst)
+    (car (last lst)))
 
-    (defun single (lst)
-      (and (consp lst) (not (cdr lst))))
+  (defun single (lst)
+    (and (consp lst) (not (cdr lst))))
 
-    (defun append1 (lst obj)
-      (append lst (list obj)))
+  (defun append1 (lst obj)
+    (append lst (list obj)))
 
-    (defun conc1 (lst obj)
-      (nconc lst (list obj)))
+  (defun conc1 (lst obj)
+    (nconc lst (list obj)))
 
-    (defun mklist (obj)
-      (if (listp obj) obj (list obj)))
-#+END_EXAMPLE
+  (defun mklist (obj)
+    (if (listp obj) obj (list obj)))
+#+END_SRC
 
 Figure 4.1: Small functions which operate on lists.
 
@@ -2560,9 +2560,9 @@ The function single tests whether something is a list of one element.
 Lisp programs need to make this test rather often. At first one might be
 tempted to use the natural translation from English:
 
-#+BEGIN_EXAMPLE
-    (= (length lst) 1)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (= (length lst) 1)
+#+END_SRC
 
 Written this way, the test would be very inefficient. We know all we
 need to know as soon as we've looked past the first element.
@@ -2578,10 +2578,10 @@ to return either a single value or a list of values. Suppose that lookup
 is such a function, and that we want to collect the results of calling
 it on all the elements of a list called data. We can do so by writing:
 
-#+BEGIN_EXAMPLE
-    (mapcan #'(lambda (d) (mklist (lookup d)))
-        data)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (mapcan #'(lambda (d) (mklist (lookup d)))
+          data)
+#+END_SRC
 
 Figure 4.2 contains some larger examples of list utilities. The first,
 longer, is useful from the point of view of efficiency as well as
@@ -2589,9 +2589,9 @@ abstraction. It compares two sequences and returns true only if the
 first is longer. When comparing the lengths of two lists, it is tempting
 to do just that:
 
-#+BEGIN_EXAMPLE
-    (> (length x) (length y))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (> (length x) (length y))
+#+END_SRC
 
 This idiom is inefficient because it requires the program to traverse
 the entire length of both lists. If one list is much longer than the
@@ -2617,32 +2617,32 @@ successive cdrs of the list:
     (2 3 4 5)
 #+END_EXAMPLE
 
-#+BEGIN_EXAMPLE
-    (defun longer (x y)
-      (labels ((compare (x y)
-                (and (consp x)
-                 (or (null y)
-                     (compare (cdr x) (cdr y))))))
-        (if (and (listp x) (listp y))
-        (compare x y)
+#+BEGIN_SRC lisp
+  (defun longer (x y)
+    (labels ((compare (x y)
+               (and (consp x)
+                    (or (null y)
+                        (compare (cdr x) (cdr y))))))
+      (if (and (listp x) (listp y))
+          (compare x y)
           (> (length x) (length y)))))
 
-    (defun filter (fn lst)
-      (let ((acc nil))
-        (dolist (x lst)
-          (let ((val (funcall fn x)))
-        (if val (push val acc))))
-        (nreverse acc)))
+  (defun filter (fn lst)
+    (let ((acc nil))
+      (dolist (x lst)
+        (let ((val (funcall fn x)))
+          (if val (push val acc))))
+      (nreverse acc)))
 
-    (defun group (source n)
-      (if (zerop n) (error "zero length"))
-      (labels ((rec (source acc)
-            (let ((rest (nthcdr n source)))
-              (if (consp rest)
-                  (rec rest (cons (subseq source 0 n) acc))
-                (nreverse (cons source acc))))))
-        (if source (rec source nil) nil)))
-#+END_EXAMPLE
+  (defun group (source n)
+    (if (zerop n) (error "zero length"))
+    (labels ((rec (source acc)
+               (let ((rest (nthcdr n source)))
+                 (if (consp rest)
+                     (rec rest (cons (subseq source 0 n) acc))
+                     (nreverse (cons source acc))))))
+      (if source (rec source nil) nil)))
+#+END_SRC
 
 Figure 4.2: Larger functions that operate on lists.
 
