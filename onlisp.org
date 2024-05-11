@@ -1704,15 +1704,15 @@ elements of a list in the reverse order. Instead of writing a function
 to reverse lists, we write a function which takes a list, and returns a
 list with the same elements in the reverse order.
 
-#+BEGIN_EXAMPLE
-    (defun bad-reverse (lst)
-      (let* ((len (length lst))
-         (ilimit (truncate (/ len 2))))
-        (do ((i 0 (1+ i))
-         (j (1- len) (1- j)))
-        ((>= i ilimit))
-          (rotatef (nth i lst) (nth j lst)))))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (defun bad-reverse (lst)
+    (let* ((len (length lst))
+           (ilimit (truncate (/ len 2))))
+      (do ((i 0 (1+ i))
+           (j (1- len) (1- j)))
+          ((>= i ilimit))
+        (rotatef (nth i lst) (nth j lst)))))
+#+END_SRC
 
 Figure 3.1: A function to reverse lists.
 
@@ -1752,14 +1752,16 @@ original list is not touched.
     (A B C)
 #+END_EXAMPLE
 
-#+BEGIN_EXAMPLE
-    (defun good-reverse (lst)
-      (labels ((rev (lst acc)
-            (if (null lst)
-                acc
-              (rev (cdr lst) (cons (car lst) acc)))))
-        (rev lst nil)))
-#+END_EXAMPLE
+---
+
+#+BEGIN_SRC lisp
+  (defun good-reverse (lst)
+    (labels ((rev (lst acc)
+               (if (null lst)
+                   acc
+                   (rev (cdr lst) (cons (car lst) acc)))))
+      (rev lst nil)))
+#+END_SRC
 
 Figure 3.2: A function to return reversed lists.
 
@@ -1786,17 +1788,17 @@ value--it doesn't touch its arguments. But people learning Lisp may
 assume that, like bad-reverse, it works by side-effects. If in some part
 of a program they want a list lst to be reversed, they may write
 
-#+BEGIN_EXAMPLE
-    (reverse lst)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (reverse lst)
+#+END_SRC
 
 and wonder why the call seems to have no effect. In fact, if we want
 effects from such a function, we have to see to it ourselves in the
 calling code. That is, we need to write
 
-#+BEGIN_EXAMPLE
-    (setq lst (reverse lst))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (setq lst (reverse lst))
+#+END_SRC
 
 instead. Operators like reverse are intended to be called for return
 values, not side-effects. It is worth writing your own programs in this
@@ -1817,9 +1819,9 @@ arguments, but you still can't assume that it will reverse them. As
 before, the reversed list has to be found in the return value. You still
 can't write
 
-#+BEGIN_EXAMPLE
-    (nreverse lst)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (nreverse lst)
+#+END_SRC
 
 in the middle of a function and assume that afterwards lst will be
 reversed. This is what happens in most implementations:
@@ -1840,15 +1842,15 @@ If a function is advertised as destructive, that doesn't mean that it's
 meant to be called for side-effects. The danger is, some destructive
 functions give the impression that they are. For example,
 
-#+BEGIN_EXAMPLE
-    (nconc x y)
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (nconc x y)
+#+END_SRC
 
 almost always has the same effect as
 
-#+BEGIN_EXAMPLE
-    (setq x (nconc x y))
-#+END_EXAMPLE
+#+BEGIN_SRC lisp
+  (setq x (nconc x y))
+#+END_SRC
 
 If you wrote code which relied on the former idiom, it might seem to
 work for some time. However, it wouldn't do what you expected when x was
